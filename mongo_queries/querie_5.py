@@ -7,7 +7,13 @@ from random import randint, choice
 import time
 
 
-SEGMENTS = ['AUTOMOBILE', 'BUILDING', 'FURNITURE', 'MACHINERY', 'HOUSEHOLD']
+REGIONS = [
+    "AFRICA",
+    "AMERICA",
+    "ASIA",
+    "EUROPE",
+    "MIDDLE EAST"
+]
 
 db = client_mongo['tpc-h']
 collection = db['lineitem']
@@ -17,37 +23,68 @@ pipeline = [
             "from": "orders",
             "localField": "l_orderkey",
             "foreignField": "o_orderkey",
-            "as": "orders"
+            "as": "order"
         }
     },
     {
-        "$unwind": "$orders"
+        "$unwind": "$order"
     },
     {
         "$lookup": {
             "from": "customer",
-            "localField": "orders.o_custkey",
+            "localField": "order.o_custkey",
             "foreignField": "c_custkey",
-            "as": "customers"
+            "as": "customer"
         }
     },
     {
-        "$unwind": "$customers"
+        "$unwind": "$customer"
+    },
+    {
+        "$lookup": {
+            "from": "supplier",
+            "localField": "l_suppkey",
+            "foreignField": "s_suppkey",
+            "as": "supplier"
+        }
+    },
+    {
+        "$unwind": "$supplier"
+    },
+    {
+        "$lookup": {
+            "from": "nation",
+            "localField": "supplier.s_nationkey",
+            "foreignField": "n_nationkey",
+            "as": "nation"
+        }
+    },
+    {
+        "$unwind": "$nation"
+    },
+    {
+        "$lookup": {
+            "from": "region",
+            "localField": "nation.n_regionkey",
+            "foreignField": "r_regionkey",
+            "as": "region"
+        }
+    },
+    {
+        "$unwind": "$region"
     },
     {
         "$match": {
-            "customers.c_mktsegment": "BUILDING",
-            "orders.o_orderdate": {
-                "$lt": datetime.strptime("1995-03-15", "%Y-%m-%d")
-            },
-            "l_shipdate": {
-                "$gt": datetime.strptime("1995-03-15", "%Y-%m-%d")
+            "region.r_name": "ASIA",
+            "order.o_orderdate": {
+                "$gte": None,
+                "$lt": None
             }
         }
     },
     {
         "$project": {
-            "l_orderkey": 1,
+            "n_name": "$nation.n_name",
             "revenue": {
                 "$multiply": [
                     "$l_extendedprice",
@@ -55,18 +92,12 @@ pipeline = [
                         "$subtract": [1, "$l_discount"]
                     }
                 ]
-            },
-            "o_orderdate": "$orders.o_orderdate",
-            "o_shippriority": "$orders.o_shippriority"
+            }
         }
     },
     {
         "$group": {
-            "_id": {
-                "l_orderkey": "$l_orderkey",
-                "o_orderdate": "$o_orderdate",
-                "o_shippriority": "$o_shippriority"
-            },
+            "_id": "$n_name",
             "total_revenue": {
                 "$sum": "$revenue"
             }
@@ -74,17 +105,7 @@ pipeline = [
     },
     {
         "$sort": {
-            "total_revenue": -1,
-            "_id.o_orderdate": 1
-        }
-    },
-    {
-        "$project": {
-            "_id": 0,
-            "l_orderkey": "$_id.l_orderkey",
-            "total_revenue": 1,
-            "o_orderdate": "$_id.o_orderdate",
-            "o_shippriority": "$_id.o_shippriority"
+            "total_revenue": -1
         }
     }
 ]
@@ -98,12 +119,12 @@ def run_benchmark():
     execution_times = []
     for _ in range(0, 5):
         print(_)
-        segment = choice(SEGMENTS)
-        date = f'1995-03-{randint(1, 31)}'
+        region = choice(REGIONS)
+        date = f'{randint(1993, 1998)}-01-01'
 
-        pipeline[4]["$match"]["customers.c_mktsegment"] = segment
-        pipeline[4]["$match"]["orders.o_orderdate"]["$lt"] = datetime.strptime(date, "%Y-%m-%d")
-        pipeline[4]["$match"]["l_shipdate"]["$gt"] = datetime.strptime(date, "%Y-%m-%d")
+        pipeline[10]["$match"]["region.r_name"] = region
+        pipeline[10]["$match"]["order.o_orderdate"]["$gte"] = datetime.strptime(date, "%Y-%m-%d")
+        pipeline[10]["$match"]["order.o_orderdate"]["$lt"] = datetime.strptime(date, "%Y-%m-%d") + timedelta(days=365)
 
         start_time = time.time()
         execute(pipeline)

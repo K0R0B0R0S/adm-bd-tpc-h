@@ -47,7 +47,7 @@ def run_benchmark():
     cursor.execute("SET search_path TO 'tpc_h';")
 
     execution_times = []
-    for _ in range(0, 100):
+    for _ in range(0, 5):
         region = choice(REGIONS)
         date = f'{randint(1993, 1998)}-01-01'
 

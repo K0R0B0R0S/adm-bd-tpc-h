@@ -59,7 +59,7 @@ def run_benchmark():
     cursor.execute("SET search_path TO 'tpc_h';")
 
     execution_times = []
-    for _ in range(0, 100):
+    for _ in range(0, 5):
         color = choice(COLORS)
 
         start_time = time.time()
