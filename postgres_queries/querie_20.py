@@ -6,7 +6,6 @@ from random import randint, choice
 import time
 
 
-# Lista de cores, assumindo que são definidas na geração de P_NAME
 COLORS = ["almond", "antique", "aquamarine", "azure", "beige", "bisque", "black", "blanched",
 "blue", "blush", "brown", "burlywood", "burnished", "chartreuse", "chiffon", "chocolate",
 "coral", "cornflower", "cornsilk", "cream", "cyan", "dark", "deep", "dim", "dodger",
@@ -17,9 +16,8 @@ COLORS = ["almond", "antique", "aquamarine", "azure", "beige", "bisque", "black"
 "papaya", "peach", "peru", "pink", "plum", "powder", "puff", "purple", "red", "rose",
 "rosy", "royal", "saddle", "salmon", "sandy", "seashell", "sienna", "sky", "slate", "smoke",
 "snow", "spring", "steel", "tan", "thistle", "tomato", "turquoise", "violet", "wheat",
-"white", "yellow"]  # Exemplo de cores
+"white", "yellow"]
 
-# Lista de nações, conforme especificado
 NATIONS = [
     'ALGERIA', 'ARGENTINA', 'BRAZIL', 'CANADA', 'EGYPT', 'ETHIOPIA', 'FRANCE', 'GERMANY', 'INDIA', 'INDONESIA', 
     'IRAN', 'IRAQ', 'JAPAN', 'JORDAN', 'KENYA', 'MOROCCO', 'MOZAMBIQUE', 'PERU', 'CHINA', 'ROMANIA', 

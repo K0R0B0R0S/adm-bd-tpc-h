@@ -18,9 +18,11 @@ REGIONS = [
     "MIDDLE EAST"
 ]
 
-TYPES = ['TIN', 'NICKEL', 'BRASS', 'STEEL', 'COPPER']
+Syllable1 = ['STANDARD', 'SMALL', 'MEDIUM', 'LARGE', 'ECONOMY', 'PROMO']
+Syllable2 = ['ANODIZED', 'BURNISHED', 'PLATED', 'POLISHED', 'BRUSHED']
+Syllable3 = ['TIN', 'NICKEL', 'BRASS', 'STEEL', 'COPPER']
 
-def execute(cursor, nation, region, type_):
+def execute(cursor, nation, region, type1, type2, type3):
     cursor.execute(f"""
         SELECT
             o_year,
@@ -53,20 +55,19 @@ def execute(cursor, nation, region, type_):
                 AND r_name = '{region}'
                 AND s_nationkey = n2.n_nationkey
                 AND o_orderdate BETWEEN DATE '1995-01-01' AND DATE '1996-12-31'
-                AND p_type = '{type_}'
+                AND p_type = '{type1} {type2} {type3}'
         ) AS all_nations
         GROUP BY
             o_year
         ORDER BY
             o_year;
     """)
-    print(cursor.fetchall(), region, nation, type_)    
+    print(cursor.fetchall())    
 
 def generate_random_nation():
-    return choice(NATIONS)  # Seleciona uma NATION aleatoriamente
+    return choice(NATIONS)
 
 def generate_region_for_nation(nation):
-    # Mapear na prática as relações entre NATION e REGION aqui
     nation_region_map = {
         "ALGERIA": "AFRICA",
         "EGYPT": "AFRICA",
@@ -105,13 +106,14 @@ def run_benchmark():
 
     execution_times = []
     for _ in range(0, 100):
-        region = choice(REGIONS)
-        nation = generate_random_nation()
+        nation = choice(NATIONS)
         region = generate_region_for_nation(nation)
-        type_ = generate_random_type()
+        type1 = choice(Syllable1)
+        type2 = choice(Syllable2)
+        type3 = choice(Syllable3)
 
         start_time = time.time()
-        execute(cursor, nation, region, type_)
+        execute(cursor, nation, region, type1, type2, type3)
         end_time = time.time()
 
         execution_times.append(end_time - start_time)
