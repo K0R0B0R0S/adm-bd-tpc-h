@@ -58,7 +58,7 @@ def execute(pipeline):
 
 def run_benchmark():
     execution_times = []
-    for _ in range(0, 100):
+    for _ in range(0, 5):
         delta = randint(DELTA_START, DELTA_END)
         pipeline[0]["$match"]["l_shipdate"]["$lte"] = datetime(1998, 12, 1) - timedelta(days=delta)
 

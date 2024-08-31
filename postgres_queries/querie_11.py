@@ -50,7 +50,7 @@ def run_benchmark():
     cursor.execute("SET search_path TO 'tpc_h';")
 
     execution_times = []
-    for _ in range(0, 100):
+    for _ in range(0, 5):
         nation = choice(NATIONS)
         fraction = 0.0001 / SF
 

@@ -51,7 +51,7 @@ def run_benchmark():
     cursor.execute("SET search_path TO 'tpc_h';")
 
     execution_times = []
-    for _ in range(0, 100):
+    for _ in range(0, 5):
         quantity1 = randint(1, 10)
         quantity2 = randint(10, 20)
         quantity3 = randint(20, 30)
